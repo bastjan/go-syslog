@@ -3,6 +3,8 @@ package rfc3164
 import (
     "fmt"
     "time"
+
+    syslog "github.com/influxdata/go-syslog"
 )
 
 func unsafeUTF8DecimalCodePointsToInt(chars []uint8) int {
@@ -185,14 +187,14 @@ func NewMachine() *machine {
 }
 
 // Parse parses the input byte array as a RFC3164 syslog message.
-func (m *machine) Parse(input []byte, bestEffort *bool) (*syslogMessage, error) {
+func (m *machine) Parse(input []byte, bestEffort *bool) (*syslog.Message, error) {
     m.data = input
     m.p = 0
     m.pb = 0
     m.pe = len(input)
     m.eof = len(input)
     m.err = nil
-    output := &syslogMessage{}
+    output := &SyslogMessage{}
 
     %% write init;
     %% write exec;
@@ -209,8 +211,6 @@ func (m *machine) Parse(input []byte, bestEffort *bool) (*syslogMessage, error) 
         return nil, m.err
     }
 
-    return output, nil
-
-    // return output.export(), nil
+    return output.export(), nil
 }
 
