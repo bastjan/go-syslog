@@ -11,9 +11,11 @@ build: rfc5424/machine.go rfc5424/builder.go nontransparent/parser.go
 
 rfc5424/machine.go: rfc5424/machine.go.rl common/common.rl
 
+rfc3164/machine.go: rfc3164/machine.go.rl common/common.rl
+
 rfc5424/builder.go: rfc5424/builder.go.rl common/common.rl
 
-rfc5424/builder.go rfc5424/machine.go:
+rfc5424/builder.go rfc5424/machine.go rfc3164/machine.go:
 	$(RAGEL) -Z -G2 -e -o $@ $<
 	@sed -i '/^\/\/line/d' $@
 	$(MAKE) file=$@ snake2camel
