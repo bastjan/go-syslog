@@ -30,7 +30,7 @@ var (
 %%{
 machine rfc3164;
 
-include rfc5424 "rfc5424.rl";
+include common "common.rl";
 
 # unsigned alphabet
 alphtype uint8;
@@ -119,7 +119,13 @@ mmm = ('Jan' | 'Feb' | 'Mar' | 'Apr' | 'May' | 'Jun' | 'Jul' | 'Aug' | 'Sep' | '
 # " 1".."31"
 dd = (sp . '1'..'9' | '1'..'2' . '0'..'9' | '3' . '0'..'1');
 
-pri = ('<' prival >mark %set_prival $err(err_prival) '>') @err(err_pri);
+# 1..191
+privalrange = (('1' ('9' ('0'..'1'){,1} | '0'..'8' ('0'..'9'){,1}){,1}) | ('2'..'9' ('0'..'9'){,1}));
+
+# 1..191 or 0
+prival = (privalrange | '0') >mark %from(set_prival) $err(err_prival);
+
+pri = ('<' prival '>') @err(err_pri);
 
 timestamp = (mmm sp dd sp timehour ':' timeminute ':' timesecond) >mark %set_timestamp @err(err_timestamp);
 
