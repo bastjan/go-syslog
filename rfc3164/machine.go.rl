@@ -135,16 +135,16 @@ timestamp = (mmm sp dd sp timehour ':' timeminute ':' timesecond) >mark %set_tim
 hostname = hostnamerange >mark %set_hostname $err(err_hostname);
 
 # Section 4.1.3
-# tag = alnum{1,32} >mark %set_tag @err(err_tag);
+tag = (print - [:\[]){1,32} >mark %set_tag @err(err_tag);
 
-# visible = print | 0x80..0xFF;
+visible = print | 0x80..0xFF;
 
 # The first not alphanumeric character start the content part of the message part
-# content = !alnum @err(err_contentstart) >mark print* %set_content @err(err_content);
+content = !alnum @err(err_contentstart) >mark print* %set_content @err(err_content);
 
-# msg = tag content;
+message = (print | 0x80..0xFF)+ >mark %set_message;
 
-msg = (print | 0x80..0xFF)+ >mark %set_message;
+msg = tag content? message;
 
 fail := (any - [\n\r])* @err{ fgoto main; };
 
@@ -187,14 +187,14 @@ func NewMachine() *machine {
 }
 
 // Parse parses the input byte array as a RFC3164 syslog message.
-func (m *machine) Parse(input []byte, bestEffort *bool) (*syslog.Message, error) {
+func (m *machine) Parse(input []byte, bestEffort *bool) (syslog.Message, error) {
     m.data = input
     m.p = 0
     m.pb = 0
     m.pe = len(input)
     m.eof = len(input)
     m.err = nil
-    output := &SyslogMessage{}
+    output := &syslogMessage{}
 
     %% write init;
     %% write exec;

@@ -11,7 +11,8 @@ type syslogMessage struct {
 	version        uint16
 	timestamp      time.Time
 	hostname       string
-	appname        string
+	tag            string
+	content        string
 	procID         string
 	msgID          string
 	structuredData map[string]map[string]string
@@ -40,8 +41,8 @@ func (sm *syslogMessage) export() *SyslogMessage {
 	if sm.hostname != "-" && sm.hostname != "" {
 		out.hostname = &sm.hostname
 	}
-	if sm.appname != "-" && sm.appname != "" {
-		out.appname = &sm.appname
+	if sm.tag != "-" && sm.tag != "" {
+		out.appname = &sm.tag
 	}
 	if sm.procID != "-" && sm.procID != "" {
 		out.procID = &sm.procID
