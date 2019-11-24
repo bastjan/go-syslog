@@ -44,6 +44,9 @@ tests:
 docs/nontransparent.dot: nontransparent/parser.go.rl
 	$(RAGEL) -Z -Vp $< -o $@
 
+docs/rfc3164.dot: rfc3164/machine.go.rl common/common.rl
+	$(RAGEL) -Z -Vp $< -o $@
+
 docs/rfc5424.dot: rfc5424/machine.go.rl common/common.rl
 	$(RAGEL) -Z -Vp $< -o $@
 
@@ -106,7 +109,7 @@ docs:
 
 .PHONY: dots
 dots: docs
-	$(MAKE) -s docs/rfc5424.dot docs/nontransparent.dot docs/rfc5424_pri.dot docs/rfc5424_version.dot docs/rfc5424_timestamp.dot docs/rfc5424_hostname.dot docs/rfc5424_appname.dot docs/rfc5424_procid.dot docs/rfc5424_msgid.dot docs/rfc5424_structureddata.dot docs/rfc5424_msg.dot
+	$(MAKE) -s docs/rfc5424.dot docs/rfc3164.dot docs/nontransparent.dot docs/rfc5424_pri.dot docs/rfc5424_version.dot docs/rfc5424_timestamp.dot docs/rfc5424_hostname.dot docs/rfc5424_appname.dot docs/rfc5424_procid.dot docs/rfc5424_msgid.dot docs/rfc5424_structureddata.dot docs/rfc5424_msg.dot
 
 .PHONY: graph
 graph: dots docs/rfc5424_pri.png docs/rfc5424_version.png docs/rfc5424_timestamp.png docs/rfc5424_hostname.png docs/rfc5424_appname.png docs/rfc5424_procid.png docs/rfc5424_msgid.png docs/rfc5424_structureddata.png docs/rfc5424_msg.png
