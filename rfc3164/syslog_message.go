@@ -41,11 +41,11 @@ func (sm *syslogMessage) export() *SyslogMessage {
 	if sm.hostname != "-" && sm.hostname != "" {
 		out.hostname = &sm.hostname
 	}
-	if sm.tag != "-" && sm.tag != "" {
+	if sm.tag != "" {
 		out.appname = &sm.tag
 	}
-	if sm.procID != "-" && sm.procID != "" {
-		out.procID = &sm.procID
+	if sm.content != "" {
+		out.procID = &sm.content
 	}
 	if sm.msgID != "-" && sm.msgID != "" {
 		out.msgID = &sm.msgID

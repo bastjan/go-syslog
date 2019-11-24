@@ -62,8 +62,7 @@ action set_hostname {
 }
 
 action set_tag {
-    fmt.Println(">", string(m.text()))
-    output.tag += string(m.text())
+    output.tag = string(m.text())
 }
 
 action set_content {
@@ -104,12 +103,6 @@ action err_tag {
     fgoto fail;
 }
 
-action err_contentstart {
-    m.err = fmt.Errorf(errContentStart, m.p)
-	fhold;
-    fgoto fail;
-}
-
 action err_content {
     m.err = fmt.Errorf(errContent, m.p)
 	fhold;
@@ -135,20 +128,21 @@ timestamp = (mmm sp dd sp timehour ':' timeminute ':' timesecond) >mark %set_tim
 hostname = hostnamerange >mark %set_hostname $err(err_hostname);
 
 # Section 4.1.3
-tag = (print - [:\[]){1,32} >mark %set_tag @err(err_tag);
+tag = (print - [ :\[]){1,32} >mark %set_tag @err(err_tag);
 
 visible = print | 0x80..0xFF;
 
-# The first not alphanumeric character start the content part of the message part
-content = !alnum @err(err_contentstart) >mark print* %set_content @err(err_content);
+contentval = (print - [\]])* >mark %set_content @err(err_content);
+
+content = '[' contentval ']';
 
 message = (print | 0x80..0xFF)+ >mark %set_message;
 
-msg = tag content? message;
-
 fail := (any - [\n\r])* @err{ fgoto main; };
 
-main := pri timestamp sp hostname sp msg;
+tag_with_content = tag content? ':';
+
+main := pri timestamp sp hostname sp ((tag_with_content sp message) | message);
 
 }%%
 
