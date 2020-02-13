@@ -5,7 +5,6 @@ import (
 
     parser "github.com/leodido/ragel-machinery/parser"
     syslog "github.com/influxdata/go-syslog/v3"
-    "github.com/influxdata/go-syslog/v3/rfc5424"
 )
 
 %%{
@@ -89,7 +88,7 @@ func (m *machine) OnCompletion() {
 }
 
 // NewParser returns a syslog.Parser suitable to parse syslog messages sent with non-transparent framing - ie. RFC 6587.
-func NewParser(options ...syslog.ParserOption) syslog.Parser {
+func NewParser(sm syslog.Machine, options ...syslog.ParserOption) syslog.Parser {
     m := &machine{
         emit: func(*syslog.Result) { /* noop */ },
     }
@@ -102,12 +101,7 @@ func NewParser(options ...syslog.ParserOption) syslog.Parser {
     trailer, _ := m.trailertyp.Value()
     m.trailer = byte(trailer)
 
-    // Create internal parser depending on options
-    if m.bestEffort {
-        m.internal = rfc5424.NewMachine(rfc5424.WithBestEffort())
-    } else {
-        m.internal = rfc5424.NewMachine()
-    }
+    m.internal = sm
 
     return m
 }

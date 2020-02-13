@@ -5,7 +5,6 @@ import (
 	"io"
 
 	syslog "github.com/influxdata/go-syslog/v3"
-	"github.com/influxdata/go-syslog/v3/rfc5424"
 )
 
 // parser is capable to parse the input stream containing syslog messages with octetcounting framing.
@@ -22,7 +21,7 @@ type parser struct {
 }
 
 // NewParser returns a syslog.Parser suitable to parse syslog messages sent with transparent - ie. octet counting (RFC 5425) - framing.
-func NewParser(opts ...syslog.ParserOption) syslog.Parser {
+func NewParser(sm syslog.Machine, opts ...syslog.ParserOption) syslog.Parser {
 	p := &parser{
 		emit: func(*syslog.Result) { /* noop */ },
 	}
@@ -31,12 +30,7 @@ func NewParser(opts ...syslog.ParserOption) syslog.Parser {
 		p = opt(p).(*parser)
 	}
 
-	// Create internal parser depending on options
-	if p.bestEffort {
-		p.internal = rfc5424.NewMachine(rfc5424.WithBestEffort())
-	} else {
-		p.internal = rfc5424.NewMachine()
-	}
+	p.internal = sm
 
 	return p
 }
